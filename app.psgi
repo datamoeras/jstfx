@@ -28,7 +28,7 @@ my $wav = sub {
 	my $srv = voicesrv->new;
 	my $voice = $srv->request($path);
 	my $filename = $voice->filename($use_ogg ? 'ogg' : 'mp3');
-	return [302, ['Location',"/git/jts/wav/$filename"], []];
+	return [301, ['Location',"/git/jts/wav/$filename"], []];
 };
 
 builder {

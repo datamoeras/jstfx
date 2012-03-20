@@ -126,16 +126,16 @@ sub system23 {
 	my $cmd = $_[0];
 	print STDERR "SYSTEM23 $cmd\n" . join(" ", @_) . "\n";
 	my $pid = open2(my $hr, my $hw, @_);
-	# print STDERR "open2-pid: $pid $cmd\n";
+	print STDERR "open2-pid: $pid $cmd\n";
 	print $hw ${$ref};
 	print STDERR length(${$ref}) . " bytes geschreven\n";
 	close($hw);
-	# print STDERR "schrijf-handle gesloten; wacht op blocking read\n";
+	print STDERR "schrijf-handle gesloten; wacht op blocking read\n";
 	local $/;
 	my $mp3 = <$hr>;
-	# print STDERR length($mp3) . " bytes gelezen\n";
+	print STDERR length($mp3) . " bytes gelezen\n";
 	close($hr);
-	# print STDERR "lees-handle gesloten; wait op pid $pid\n";
+	print STDERR "lees-handle gesloten; wait op pid $pid\n";
 	waitpid($pid, 0);
 	return $mp3;
 }
@@ -152,6 +152,7 @@ sub bin_effects {
 	my $ref = shift;
 
 	my @sox = qw/sox - -t wav -/;
+	my $niet = @sox;
 
 	my $mod = $voice->{pitch}.$voice->{tempo};
 	my ($pitch, $tempo) = (0, 0);
@@ -183,6 +184,7 @@ sub bin_effects {
 			}
 		}
 	}
+	return ${$ref} if @sox == $niet;
 	return $self->system23($ref, @sox);
 }
 
