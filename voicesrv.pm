@@ -42,8 +42,8 @@ sub request {
 	my $raw_wav = $self->bin_silence(\$trim_raw_wav);
 	my $wav = $self->bin_effects($voice, \$raw_wav);
 	my %bin;
-	$bin{wav} = $raw_wav;
-	$bin{png} = $self->bin_waveform_png(\$wav);
+	$bin{wav} = $wav;
+	$self->write_waveform_png(\$wav, $self->voice_filename($voice, 'png'));
 	$bin{mp3} = $self->bin_encode_mp3(\$wav);
 	$bin{ogg} = $self->bin_encode_ogg(\$wav);
 
@@ -53,8 +53,8 @@ sub request {
 	print STDERR "4. wav opslaan op $filename_wav\n";
 	print STDERR "5. mp3:   \t" . length($bin{mp3}) . " bytes\n";
 	print STDERR "6. ogg:   \t" . length($bin{ogg}) . " bytes\n";
-	print STDERR "7. png:   \t" . length($bin{png}) . " bytes\n";
-	for my $ext (grep $bin{$_} => qw/wav png ogg mp3/) {
+
+	for my $ext (grep $bin{$_} => qw/wav ogg mp3/) {
 		my $fn = $self->voice_filename($voice, $ext);
 		open(my $fh, '>', $fn) or die $! . '@' . $fn;
 		print $fh $bin{$ext};
@@ -89,10 +89,16 @@ sub bin_curl_googli {
 	return $res->content;
 }
 
-sub bin_waveform_png {
+sub write_waveform_png {
 	my $self = shift;
 	my $ref = shift;
-	$self->system23($ref, qw{./waveformgen - -});
+	my $fn = shift;
+	my $temp_wav = "/tmp/waveform$$.wav";
+	open(my $fh, '>', $temp_wav) or die $!.'@'.$temp_wav;
+	print $fh ${$ref};
+	close($fh);
+	system("./waveformgen",$temp_wav, $fn);
+	unlink($temp_wav);
 }
 sub bin_encode_mp3 {
 	my $self = shift;
