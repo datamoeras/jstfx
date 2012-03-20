@@ -60,6 +60,7 @@ sub request {
 		print $fh $bin{$ext};
 		close($fh);
 	}
+	return $voice;
 }
 
 sub url_googli {
