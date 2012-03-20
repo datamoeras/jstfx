@@ -39,7 +39,7 @@ sub parse_string {
 	$self->{reverse} = $reverse;
 	$self->{music} = $music;
 
-	print STDERR Dumper($self);
+	# print STDERR Dumper($self);
 	return $self;
 }
 

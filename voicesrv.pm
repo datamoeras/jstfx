@@ -35,6 +35,9 @@ sub request {
 
 	my $voice = voice->new->parse_string($str);
 	my $filename_wav = $self->voice_filename($voice, 'wav');
+	if (-e $filename_wav && -e $self->voice_filename($voice, 'mp3') && $self->voice_filename($voice, 'png') && $self->voice_filename($voice, 'ogg')) {
+		return $voice;
+	}
 	print STDERR "compile stem: $str\n";
 
 	my $googli_data = $self->bin_curl_googli($voice);
